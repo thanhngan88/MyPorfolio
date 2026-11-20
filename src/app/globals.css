@@ -1,26 +1,110 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
+/* ============ Design tokens (autumn palette) ============ */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-burnt-orange: #d2691e;
+  --color-burnt-orange-light: #e8832a;
+  --color-mustard: #e5a100;
+  --color-mustard-light: #f5c242;
+  --color-off-white: #fdf8f0;
+  --color-off-white-dark: #f5ede0;
+  --color-warm-brown: #8b4513;
+  --color-warm-brown-light: #a0522d;
+  --color-text-dark: #2d1810;
+  --color-text-medium: #5c3a28;
+  --color-text-light: #8b6f5e;
+  --color-accent-coral: #ff6b4a;
+  --color-accent-peach: #ffab91;
+
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-playfair), Georgia, serif;
+  --font-space: var(--font-space-grotesk), system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ============ Base — Tailwind preflight already resets margin/padding ============ */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+  }
+
+  body {
+    @apply bg-off-white font-sans text-text-dark antialiased;
+    overflow-x: clip;
+  }
+
+  ::selection {
+    @apply bg-burnt-orange text-white;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ============ Components (layered, so utilities can still override) ============ */
+@layer components {
+  /* Static gradient: no infinite repaint */
+  .gradient-text {
+    background-image: linear-gradient(120deg, #d2691e 0%, #e5a100 55%, #ff6b4a 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .card {
+    @apply rounded-3xl bg-white shadow-[0_10px_30px_-12px_rgb(210_105_30/0.18)];
+  }
+
+  .btn-primary {
+    @apply bg-gradient-to-br from-burnt-orange to-burnt-orange-light text-white shadow-lg shadow-burnt-orange/30 transition-[box-shadow,filter] duration-300;
+  }
+  .btn-primary:hover {
+    @apply shadow-xl shadow-burnt-orange/40;
+    filter: brightness(1.08);
+  }
+
+  /* Cheap background glow (radial gradient instead of huge blur filters) */
+  .hero-glow {
+    background:
+      radial-gradient(40rem 30rem at 10% 20%, rgb(210 105 30 / 0.10), transparent 70%),
+      radial-gradient(40rem 30rem at 95% 85%, rgb(229 161 0 / 0.14), transparent 70%);
+  }
+
+  /* GPU-friendly floating (transform only) */
+  .float {
+    animation: float 4s ease-in-out infinite;
+    will-change: transform;
+  }
+  .float-slow {
+    animation: float-rotate 6s ease-in-out infinite;
+    will-change: transform;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes float-rotate {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-8px) rotate(10deg);
+  }
+}
+
+/* Respect users who prefer less motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
 }
